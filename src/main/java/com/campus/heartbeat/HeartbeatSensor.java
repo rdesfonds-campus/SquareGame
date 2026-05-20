@@ -1,0 +1,5 @@
+package com.campus.heartbeat;
+
+public interface HeartbeatSensor {
+    int get();
+}
