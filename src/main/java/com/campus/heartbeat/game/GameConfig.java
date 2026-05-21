@@ -1,0 +1,14 @@
+package com.campus.heartbeat.game;
+
+import fr.le_campus_numerique.square_games.engine.tictactoe.TicTacToeGameFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class GameConfig {
+
+    @Bean
+    public TicTacToeGameFactory ticTacToeGameFactory() {
+        return new TicTacToeGameFactory();
+    }
+}
