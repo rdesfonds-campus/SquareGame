@@ -3,6 +3,9 @@ package com.campus.heartbeat.game;
 import fr.le_campus_numerique.square_games.engine.Game;
 import fr.le_campus_numerique.square_games.engine.GameFactory;
 import org.springframework.stereotype.Service;
+import fr.le_campus_numerique.square_games.engine.InvalidPositionException;
+import fr.le_campus_numerique.square_games.engine.CellPosition;
+import fr.le_campus_numerique.square_games.engine.Token;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,5 +38,16 @@ public class GameServiceImpl implements GameService {
     @Override
     public Game getGame(UUID gameId) {
         return games.get(gameId);
+    }
+    @Override
+    public Game playMove(UUID gameId, String tokenName, int x, int y) throws InvalidPositionException {
+        Game game = getGame(gameId);
+        game.getRemainingTokens().stream()
+                .filter(t -> t.getName().equals(tokenName))
+                .filter(Token::canMove)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Token not found"))
+                .moveTo(new CellPosition(x, y));
+        return game;
     }
 }

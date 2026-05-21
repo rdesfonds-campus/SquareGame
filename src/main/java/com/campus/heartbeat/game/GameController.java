@@ -1,6 +1,7 @@
 package com.campus.heartbeat.game;
 
 import fr.le_campus_numerique.square_games.engine.Game;
+import fr.le_campus_numerique.square_games.engine.InvalidPositionException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,5 +26,13 @@ public class GameController {
     @GetMapping("/{id}")
     public Game getGame(@PathVariable UUID id) {
         return gameService.getGame(id);
+    }
+
+    @PostMapping("/{id}/tokens/{tokenName}")
+    public Game playMove(@PathVariable UUID id,
+                         @PathVariable String tokenName,
+                         @RequestParam int x,
+                         @RequestParam int y) throws InvalidPositionException {
+        return gameService.playMove(id, tokenName, x, y);
     }
 }
