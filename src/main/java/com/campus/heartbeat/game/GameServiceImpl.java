@@ -6,20 +6,19 @@ import org.springframework.stereotype.Service;
 import fr.le_campus_numerique.square_games.engine.InvalidPositionException;
 import fr.le_campus_numerique.square_games.engine.CellPosition;
 import fr.le_campus_numerique.square_games.engine.Token;
+import com.campus.heartbeat.game.dao.GameDao;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class GameServiceImpl implements GameService {
 
-    private final Map<UUID, Game> games = new HashMap<>();
-
+    private final GameDao gameDao;
     private final Collection<GameFactory> gameFactories;
 
-    public GameServiceImpl(Collection<GameFactory> gameFactories) {
+    public GameServiceImpl(GameDao gameDao, Collection<GameFactory> gameFactories) {
+        this.gameDao = gameDao;
         this.gameFactories = gameFactories;
     }
 
@@ -29,19 +28,18 @@ public class GameServiceImpl implements GameService {
                 .filter(f -> f.getGameFactoryId().equals(gameType))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unknown game type: " + gameType));
-
         Game game = factory.createGame(playerCount, boardSize);
-        games.put(game.getId(), game);
-        return game;
+        return gameDao.save(game);
     }
 
     @Override
     public Game getGame(UUID gameId) {
-        return games.get(gameId);
+        return gameDao.findById(gameId).orElseThrow();
     }
+
     @Override
     public Game playMove(UUID gameId, String tokenName, int x, int y) throws InvalidPositionException {
-        Game game = getGame(gameId);
+        Game game = gameDao.findById(gameId).orElseThrow();
         game.getRemainingTokens().stream()
                 .filter(t -> t.getName().equals(tokenName))
                 .filter(Token::canMove)
