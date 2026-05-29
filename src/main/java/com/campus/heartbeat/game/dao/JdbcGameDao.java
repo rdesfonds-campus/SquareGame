@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import org.springframework.context.annotation.Primary;
 
-@Primary
 @Repository
 public class JdbcGameDao implements GameDao {
 
