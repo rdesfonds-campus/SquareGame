@@ -5,6 +5,8 @@ import fr.le_campus_numerique.square_games.engine.Game;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +15,7 @@ import java.util.UUID;
 public class JpaGameDao implements GameDao {
 
     private final JpaGameRepository repository;
+    private final Map<UUID, Game> cache = new HashMap<>();
 
     public JpaGameDao(JpaGameRepository repository) {
         this.repository = repository;
@@ -20,25 +23,24 @@ public class JpaGameDao implements GameDao {
 
     @Override
     public Collection<Game> findAll() {
-        // TODO
-        return null;
+        return cache.values();
     }
 
     @Override
     public Optional<Game> findById(UUID gameId) {
-        // TODO
-        return Optional.empty();
+        return Optional.ofNullable(cache.get(gameId));
     }
 
     @Override
     public Game save(Game game) {
-        GameEntity entity = toEntity(game);
-        repository.save(entity);
+        cache.put(game.getId(), game);
+        repository.save(toEntity(game));
         return game;
     }
 
     @Override
     public void delete(UUID gameId) {
+        cache.remove(gameId);
         repository.deleteById(gameId.toString());
     }
 
